@@ -2,7 +2,7 @@ import { SignInButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-
+import {toast} from "react-hot-toast"
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
 
@@ -21,6 +21,15 @@ const CreatePostWizard = () => {
     onSuccess:()=>{
       setInput("");
       void ctx.posts.getAll.invalidate();
+      toast.success("Added new post🥳")
+    },
+    onError:(e)=>{
+      const errorMessage = e.data?.zodError?.fieldErrors.content;
+      if(errorMessage && errorMessage[0]){
+        toast.error(errorMessage[0])
+      }else{
+        toast.error("Failed to add a post, Please try again later");
+      }
     }
   });
 
@@ -31,8 +40,25 @@ const CreatePostWizard = () => {
   return (
     <div className="flex gap-3 w-full">
       <Image width={56} height={56} className="h-12 w-12 rounded-full" src={user.profileImageUrl} alt="User Profile Picture" />
-      <input type="text" placeholder="Type some emojis" className="bg-transparent grow outline-none" value={input} onChange={(e) => setInput(e.target.value)} disabled={isPosting} />
-      <button onClick={()=>mutate({content:input})}>Post</button>
+      <input 
+        type="text" 
+        placeholder="Type some emojis" 
+        className="bg-transparent grow outline-none" 
+        value={input} onChange={(e) => setInput(e.target.value)} 
+        disabled={isPosting} 
+        onKeyDown={(e)=>{
+          if(e.key==="Enter"){
+            e.preventDefault();
+            if(input!==""){
+              mutate({content:input})
+            }
+          }
+        }}
+      />
+      {(input!=="" && !isPosting) && (
+        <button onClick={()=>mutate({content:input})} disabled={isPosting}>Post</button>
+      )}
+      {isPosting && <div className="mt-2 h-full flex justify-center"><LoadingSpinner size={20}/></div>}
     </div>
   )
 }
