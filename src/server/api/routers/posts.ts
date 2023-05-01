@@ -20,7 +20,7 @@ const filterUserforClient = (user: User) => {
   };
 };
 
-const addUserDataToPosts=async (posts:Post[])=>{
+const addUserDataToPosts = async (posts: Post[]) => {
   const users = (
     await clerkClient.users.getUserList({
       userId: posts.map((post) => post.authorId),
@@ -46,10 +46,7 @@ const addUserDataToPosts=async (posts:Post[])=>{
       },
     };
   });
-  
-}
-
-
+};
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -64,8 +61,28 @@ export const postsRouter = createTRPCRouter({
       orderBy: [{ createdAt: "desc" }],
     });
 
-    return addUserDataToPosts(posts)
+    return addUserDataToPosts(posts);
   }),
+
+  getById: publicProcedure
+    .input(
+      z.object({
+        postId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post.findUnique({
+        where: {
+          id: input.postId,
+        },
+      });
+      if (!post) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+        });
+      }
+      return (await addUserDataToPosts([post]))[0];
+    }),
 
   getPostsByUserId: publicProcedure
     .input(

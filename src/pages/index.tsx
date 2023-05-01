@@ -1,4 +1,4 @@
-import { SignInButton, useUser } from "@clerk/nextjs";
+import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
@@ -39,7 +39,7 @@ const CreatePostWizard = () => {
   }
 
   return (
-    <div className="flex gap-3 w-full">
+    <div className="flex items-center gap-3 w-full">
       <Image width={56} height={56} className="h-12 w-12 rounded-full" src={user.profileImageUrl} alt="User Profile Picture" />
       <input
         type="text"
@@ -56,8 +56,12 @@ const CreatePostWizard = () => {
           }
         }}
       />
-      {(input !== "" && !isPosting) && (
-        <button onClick={() => mutate({ content: input })} disabled={isPosting}>Post</button>
+      {(input !== "" && !isPosting) ? (
+        <button className="bg-[#0ea5e9] px-4 h-[35px] rounded-full flex justify-center items-center" onClick={() => mutate({ content: input })} disabled={isPosting}>Post</button>
+      ):(
+        <div className="bg-[#0ea5e9] px-4 h-[35px] rounded-full flex justify-center items-center">
+          <SignOutButton/>
+        </div>
       )}
       {isPosting && <div className="mt-2 h-full flex justify-center"><LoadingSpinner size={20} /></div>}
     </div>
@@ -92,7 +96,9 @@ const Home: NextPage = () => {
       </Head>
       <PageLayout>
         <div className="sticky top-0 scrollbar-hide flex border-b border-slate-400 p-4 bg-black">
-          {!isSignedIn && <div className="flex justify-center"><SignInButton /></div>}
+          {!isSignedIn && <div className="bg-[#0ea5e9] px-4 py-2 w-full rounded-full flex justify-center items-center">
+          <SignInButton/>
+        </div>}
           {!!isSignedIn && <CreatePostWizard />}
         </div>
         <Feed />

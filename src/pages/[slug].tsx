@@ -29,12 +29,6 @@ const ProfilePage: NextPage<{ userId: string }> = ({ userId }) => {
         userId
     })
 
-    const {data:posts,isLoading} = api.posts.getPostsByUserId.useQuery({
-        userId
-    })
-
-    const safePosts = posts?.map((post)=>({post,author:{firstname:(data?.firstname|| ""),lastname:(data?.lastname || ""),id:(data?.id|| ""),profileImageUrl:(data?.profileImageUrl || "")}}))
-    
 
     if (!data) {
         return (
