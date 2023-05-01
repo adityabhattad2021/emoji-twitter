@@ -2,7 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  @apply bg-black text-slate-100;
+  overscroll-behavior: none;
+}
 
-body{
-    @apply bg-black text-slate-100;
+::-webkit-scrollbar {
+  background-color: black;
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  margin-left: 10px;
+  border-radius: 4px;
+  background-color: white;
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
